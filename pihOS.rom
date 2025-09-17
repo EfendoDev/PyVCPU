@@ -1,0 +1,9 @@
+03
+.st----------------------------\n=====PihOS VERSION 0.01=====\n----------------------------\n
+.nm
+02$str1
+01
+.stPlease Input your Username\n]
+02$str1
+01
+09$nm

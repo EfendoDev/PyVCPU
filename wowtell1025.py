@@ -32,6 +32,7 @@ registers = {
 "r8":"00"
 }
 rgstr_max_size = 512
+debug = False
 
 '''
 #########################################################################
@@ -58,7 +59,11 @@ instructionset={ # These are 50/50 a todo and 50/50 needed
 "11":"index",   # implemented     # !!! This is to get letters/digits from strings/numbers out of a variable and puts it into another
 "12":"beep", # implemented        # !!! WINDOWS ONLY
 "13":"sleep", # mimimimi          # !!! i went to SLEEP while implementing (Get it hhahahahahahaha im so funny hhahHHAHAHAHAHA)
-"14":"index_range" # implemented
+"14":"index_range", # implemented
+"15":"fwrite", # implemented
+"16":"fread", # implement
+"17":"fcreate", # implemented
+"18":"fappend" # implemented
 } 
 
 '''
@@ -145,7 +150,7 @@ def run(ROM, firmware):
 				del val[line[1]+line[2]]
 		elif line[0]!="-":
 			inst=instructionset[line[0]+line[1]]
-			# print(inst, end="")
+			print(inst*debug, end="")
 			match inst:
 				case "print":
 					print(registers["r1"], end="")
@@ -341,6 +346,27 @@ def run(ROM, firmware):
 								val[destin] = registers[source][int(index_start, 16):int(index_end, 16)]
 					except:
 						pass
+				case "fwrite":
+				    file=val[line[2:4]]
+				    content=val[line[4:6]]
+				    with open(file, "w") as f:
+				        f.write(content)
+				case "fread":
+				    file=val[line[2:4]]
+				    content=line[4:6]
+				    fline=int(line[6:9], 16])
+				    with open(file, "r") as f:
+				        lin=f.readlines()
+				        val[content]=lin[fline]
+				case "fcreate":
+				    file=line[2:4]
+				    with open(file, "x") as f:
+				        pass
+				case "fappend":
+				    file=val[line[2:4]]
+				    content=val[line[4:6]]
+				    with open(file, "a") as f:
+				        f.write(content)
 				
 		for register in registers.items():
 			if len(register[1]) > rgstr_max_size:

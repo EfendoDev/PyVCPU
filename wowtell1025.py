@@ -4,7 +4,9 @@
 # Also no optimizations for this. Its Currently 23:42 on a school night as im writing this. Im too tired. Fuck you
 import os
 import random
-
+if os.name()=="java":
+	print("No, you're not gonna run this.")
+	exit
 '''
 #########################################################################
 CPU INFORMATION, I KNOW THIS COULD BE DONE BETTER, BUT I DONT GIVE A FUCK
@@ -142,7 +144,7 @@ def run(ROM, firmware):
 					if os.name == "posix":
 						os.system("clear")
 					else:
-						os.system("clr")
+						os.system("cls")
 				case "jump":
 					lineBeforeJump=str(hex(i))[2:]
 					i=int(str(line[2]+line[3]), 16)-1

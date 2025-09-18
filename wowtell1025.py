@@ -354,7 +354,7 @@ def run(ROM, firmware):
 				case "fread":
 				    file=val[line[2:4]]
 				    content=line[4:6]
-				    fline=int(line[6:9], 16])
+				    fline=int(line[6:9], 16)
 				    with open(file, "r") as f:
 				        lin=f.readlines()
 				        val[content]=lin[fline]

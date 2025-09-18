@@ -1,5 +1,7 @@
 import wowtell1025 as cpu
 
+# Sample config, dont be scared to modify
+
 rom_file=open(input("ROM => ")+".rom")
 
 rom=[]

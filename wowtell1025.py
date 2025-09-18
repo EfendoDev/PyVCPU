@@ -4,9 +4,14 @@
 # Also no optimizations for this. Its Currently 23:42 on a school night as im writing this. Im too tired. Fuck you
 import os
 import random
-if os.name()=="java":
+import time
+if os.name == "nt":
+	import winsound # SoundAPI just for windows
+
+if os.name =="java":
 	print("No, you're not gonna run this.")
 	exit
+
 '''
 #########################################################################
 CPU INFORMATION, I KNOW THIS COULD BE DONE BETTER, BUT I DONT GIVE A FUCK
@@ -22,7 +27,9 @@ registers = {
 "r3":"00",
 "r4":"00",
 "r5":"00",
-"r6":"00"
+"r6":"00",
+"r7":"00",
+"r8":"00"
 }
 rgstr_max_size = 512
 
@@ -31,7 +38,7 @@ rgstr_max_size = 512
 INSTRUCTION SET, VERY BAD, DO NOT TRY TO FIX, YOULL WANT TO DIE, TRUST ME
 #########################################################################
 '''
-instructionset={
+instructionset={ # These are 50/50 a todo and 50/50 needed
 "01":"print", # implemented
 "02":"move", # implemented
 "03":"clear", # implemented
@@ -43,11 +50,15 @@ instructionset={
 "09":"input", # implemented
 "0a":"delete", # implemented
 "0b":"back", # implemented
-"0c":"if", # implemented
+"0c":"if", # implemented         # !!! This is for numbers, it will compare R3 and R4
 "0d":"random", # implemented
 "0e":"add", # implemented
 "0f":"modulo", # implemented
-"10":"var_if" # implemented      # Also this is more for strings
+"10":"var_if", # implemented      # !!! This is for strings
+"11":"index",   # implemented     # !!! This is to get letters/digits from strings/numbers out of a variable and puts it into another
+"12":"beep", # implemented        # !!! WINDOWS ONLY
+"13":"sleep", # mimimimi          # !!! i went to SLEEP while implementing (Get it hhahahahahahaha im so funny hhahHHAHAHAHAHA)
+"14":"index_range" # implemented
 } 
 
 '''
@@ -58,6 +69,7 @@ INBUILT ROM, VERY SHIT
 ROM = []
 firmware = [
 "03",
+"1205FF00FF",
 ".cpCPU: Wowtell 1025\n",
 ".acArchitecture: SSARIC Super Short and Rudimentary Instruction Set Computer\n",
 ".nl\n",
@@ -86,7 +98,8 @@ firmware = [
 ".inTesting Input Function, Type Something And Press Enter\n] ",
 "02$inr1",
 "01",
-"09r1",
+"09$mp",
+"02$mpr1",
 "01",
 "02$nlr1",
 "01",
@@ -100,7 +113,14 @@ firmware = [
 "01",
 "10w102w102",
 "02$ifr1",
-"01"
+"01",
+".cpArch",
+"14$acac0004",
+"10cp01ac02",
+"1201050064",
+"12015D0256",
+"1364",
+"03"
 ]
 
 '''
@@ -192,9 +212,9 @@ def run(ROM, firmware):
 						val[str(line[3]+line[4]).lower()]=result
 				case "input":
 					inp=input()
-					if inp == "":
-						inp = "00"
 					if line[2] != "$":
+						if inp=="":
+							inp="00"
 						registers[str(line[2]+line[3]).lower()]=inp
 					else:
 						val[str(line[3]+line[4]).lower()]=inp
@@ -261,13 +281,67 @@ def run(ROM, firmware):
 					"06":"<"
 					}
 					try:
-						if eval(f"'{val[op1]}'{hexToOperand[opr]}'{val[op2]}'"): # once again, very secure
+						if eval(f"'{val[op1]}'{hexToOperand[opr]}'{val[op2]}'") == True: # once again, very secure
 							pass # this makes it continue normally
 						else:
 							i+=int(line[8]+line[9], 16)
 					except:
 						pass
-					
+				case "index":
+					try:
+						srcIsVar = 0
+						if line[2] == "$":
+							srcIsVar = 1
+						else:
+							srcIsVar = 0
+						source = line[2+srcIsVar]+line[3+srcIsVar]
+						destin = line[4+srcIsVar]+line[5+srcIsVar]
+						index = line[6+srcIsVar]+line[7+srcIsVar]
+						if srcIsVar == 1:
+							if destin in registers:
+								registers[destin] = val[source][int(index, 16)]
+							elif destin in val:
+								val[destin] = val[source][int(index, 16)]
+						else:
+							if destin in registers:
+								registers[destin] = registers[source][int(index, 16)]
+							elif destin in val:
+								val[destin] = registers[source][int(index, 16)]
+					except:
+						pass
+				case "beep":
+					try:
+						freq=int(line[2:6], 16) # i am NOT writing this out
+						duration=int(line[6:10], 16) # neither am i NOT writing this out
+						winsound.Beep(freq, duration)
+					except:
+						pass	
+				case "sleep":
+					time.sleep(int(line[2:9], 16)*0.01)
+				case "index_range":
+					try:
+						srcIsVar = 0
+						if line[2] == "$":
+							srcIsVar = 1
+						else:
+							srcIsVar = 0
+						source = line[2+srcIsVar]+line[3+srcIsVar]
+						destin = line[4+srcIsVar]+line[5+srcIsVar]
+						index_start = line[6+srcIsVar]+line[7+srcIsVar]
+						index_end = line[8+srcIsVar]+line[9+srcIsVar]
+						if srcIsVar == 1:
+							if destin in registers:
+								registers[destin] = val[source][int(index_start, 16):int(index_end, 16)]
+							elif destin in val:
+								val[destin] = val[source][int(index_start, 16):int(index_end, 16)]
+						else:
+							if destin in registers:
+								registers[destin] = registers[source][int(index_start, 16):int(index_end, 16)]
+							elif destin in val:
+								val[destin] = registers[source][int(index_start, 16):int(index_end, 16)]
+					except:
+						pass
+				
 		for register in registers.items():
 			if len(register[1]) > rgstr_max_size:
 				print(f"DATA OVERFLOW IN {register[0]}")

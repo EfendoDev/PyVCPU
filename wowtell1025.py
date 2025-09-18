@@ -163,7 +163,7 @@ def run(ROM, firmware):
 					if len(tmp_result) == 1:
 						result="0"+tmp_result
 					else:
-						result=temp_result
+						result=tmp_result
 					if line[2] != "$":
 						registers[str(line[2]+line[3]).lower()]=result
 					else:

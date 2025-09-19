@@ -347,26 +347,26 @@ def run(ROM, firmware):
 					except:
 						pass
 				case "fwrite":
-				    file=val[line[2:4]]
-				    content=val[line[4:6]]
-				    with open(file, "w") as f:
-				        f.write(content)
+					file=val[line[2:4]]
+					content=val[line[4:6]]
+					with open(file, "w") as f:
+						f.write(content)
 				case "fread":
-				    file=val[line[2:4]]
-				    content=line[4:6]
-				    fline=int(line[6:9], 16)
-				    with open(file, "r") as f:
-				        lin=f.readlines()
-				        val[content]=lin[fline]
+					file=val[line[2:4]]
+					content=line[4:6]
+					fline=int(line[6:9], 16)
+					with open(file, "r") as f:
+						lin=f.readlines()
+						val[content]=lin[fline]
 				case "fcreate":
-				    file=line[2:4]
-				    with open(file, "x") as f:
-				        pass
+					file=line[2:4]
+					with open(file, "x") as f:
+						pass
 				case "fappend":
-				    file=val[line[2:4]]
-				    content=val[line[4:6]]
-				    with open(file, "a") as f:
-				        f.write(content)
+					file=val[line[2:4]]
+					content=val[line[4:6]]
+					with open(file, "a") as f:
+						f.write(content)
 				
 		for register in registers.items():
 			if len(register[1]) > rgstr_max_size:

@@ -63,7 +63,9 @@ instructionset={ # These are 50/50 a todo and 50/50 needed
 "15":"fwrite", # implemented
 "16":"fread", # implement
 "17":"fcreate", # implemented
-"18":"fappend" # implemented
+"18":"fappend", # implemented # last time im writing implemented omfg
+"19":"hex-to-dec", # flippable by putting 1 at the end instead of 0
+"1A":"hex-to-ascii" # same as the above
 } 
 
 '''
@@ -367,7 +369,43 @@ def run(ROM, firmware):
 					content=val[line[4:6]]
 					with open(file, "a") as f:
 						f.write(content)
-				
+				case "hex-to-dec":
+                                        source=line[2:4]
+                                        destin=line[4:6]
+                                        flipped=int(line[6])
+                                        s_type=""
+                                        d_type=""
+                                        if source in registers:
+                                                s_type="reg"
+                                        else:
+                                                s_type="val"
+                                        if destin in registers:
+                                                s_type="reg"
+                                        else:
+                                                s_type="val"
+                                        if flipped == 0:
+                                                if s_type == "reg":
+                                                        if d_type == "val":
+                                                                val[destin]==int(registers[source], 16)
+                                                        else:
+                                                                registers[destin]==int(registers[source], 16)
+                                                else:
+                                                        if d_type == "val":
+                                                                val[destin]==int(val[source], 16)
+                                                        else:
+                                                                registers[destin]==int(val[source], 16)
+                                        else:
+                                                if s_type == "reg":
+                                                        if d_type == "val":
+                                                                val[destin]==str(hex(int(registers[source])))[2:]
+                                                        else:
+                                                               registers[destin]==str(hex(int(registers[source])))[2:]
+                                                else:
+                                                        if d_type == "val":
+                                                                val[destin]==str(hex(int(val[source])))[2:]
+                                                        else:
+                                                                registers[destin]==str(hex(int(val[source])))[2:]
+                                                               
 		for register in registers.items():
 			if len(register[1]) > rgstr_max_size:
 				print(f"DATA OVERFLOW IN {register[0]}")

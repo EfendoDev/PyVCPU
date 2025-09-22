@@ -146,27 +146,27 @@ def run(ROM, firmware):
 	while i < len(ROM):
 		line = ROM[i]
 		if line[0]==".":
-			if line[1]+line[2] not in registers:
-				val[str(line[1]+line[2]).lower()]=line[3:]
+			if line[1:3] not in registers:
+				val[line[1:3].lower()]=line[3:]
 			else:
-				del val[line[1]+line[2]]
+				del val[line[1:3]]
 		elif line[0]!="-":
-			inst=instructionset[line[0]+line[1]]
+			inst=instructionset[line[0:2]]
 			print(inst*debug, end="")
 			match inst:
 				case "print":
 					print(registers["r1"], end="")
 				case "move": # Comment from 0.27: Kill me 
 					if line[2] != "$":
-						if str(line[4]) != "$":
-							if str(line[4]+line[5]).lower() in registers:
-								registers[str(line[4]+line[5]).lower()]=str(line[2]+line[3]).lower()
+						if line[4] != "$":
+							if line[4:6].lower() in registers:
+								registers[line[4:6].lower()]=line[2:4].lower()
 						else:
-							if str(line[2]+line[3]).lower() in registers:
-								val[str(line[5]+line[6])]=registers[str(line[2]+line[3]).lower()]
+							if line[2:4].lower() in registers:
+								val[line[5:7]]=registers[line[2:4].lower()]
 					else:
-						if str(line[5]+line[6]).lower() in registers:
-							registers[line[5]+line[6]]=val[str(line[3]+line[4]).lower()]
+						if line[5:7].lower() in registers:
+							registers[line[5:7]]=val[line[3:5].lower()]
 				case "clear":
 					if os.name == "posix":
 						os.system("clear")
@@ -174,7 +174,7 @@ def run(ROM, firmware):
 						os.system("cls")
 				case "jump":
 					lineBeforeJump=str(hex(i))[2:]
-					i=int(str(line[2]+line[3]), 16)-1
+					i=int(line[2:4], 16)-1
 				case "back":
 					i=lineBeforeJump-1
 				case "mult":
@@ -184,9 +184,9 @@ def run(ROM, firmware):
 					else:
 						result=tmp_result
 					if line[2] != "$":
-						registers[str(line[2]+line[3]).lower()]=result
+						registers[line[2:4].lower()]=result
 					else:
-						val[str(line[3]+line[4]).lower()]=result
+						val[line[3:5].lower()]=result
 				case "divi":
 					tmp_result=str(hex(round(int(registers["r5"], 16)/int(registers["r6"], 16))))[2:]
 					if len(tmp_result) == 1:
@@ -194,9 +194,9 @@ def run(ROM, firmware):
 					else:
 						result=tmp_result
 					if line[2] != "$":
-						registers[str(line[2]+line[3]).lower()]=result
+						registers[line[2:4].lower()]=result
 					else:
-						val[str(line[3]+line[4]).lower()]=result
+						val[line[3:5].lower()]=result
 				case "addi":
 					tmp_result=str(hex(int(registers["r5"], 16)+int(registers["r6"], 16)))[2:] # Fuck Floats
 					if len(tmp_result) == 1:
@@ -204,9 +204,9 @@ def run(ROM, firmware):
 					else:
 						result=tmp_result
 					if line[2] != "$":
-						registers[str(line[2]+line[3]).lower()]=result
+						registers[line[2:4].lower()]=result
 					else:
-						val[str(line[3]+line[4]).lower()]=result
+						val[line[3:5].lower()]=result
 				case "subt":
 					tmp_result=str(hex(int(registers["r5"], 16)-int(registers["r6"], 16)))[2:]
 					if len(tmp_result) == 1:
@@ -214,17 +214,17 @@ def run(ROM, firmware):
 					else:
 						result=tmp_result
 					if line[2] != "$":
-						registers[str(line[2]+line[3]).lower()]=result
+						registers[line[2:4].lower()]=result
 					else:
-						val[str(line[3]+line[4]).lower()]=result
+						val[line[3:5].lower()]=result
 				case "input":
 					inp=input()
 					if line[2] != "$":
 						if inp=="":
 							inp="00"
-						registers[str(line[2]+line[3]).lower()]=inp
+						registers[line[2:4].lower()]=inp
 					else:
-						val[str(line[3]+line[4]).lower()]=inp
+						val[line[3:5].lower()]=inp
 				case "delete":
 					del val[line[2]+line[3]]
 				case "if":
@@ -240,13 +240,13 @@ def run(ROM, firmware):
 						if eval(f"{'0x'+registers['r3']}{hexToOperand[line[2]+line[3]]}{'0x'+registers['r4']}"): # Top Ten Secure and not lazy code, definitly not sarcasm
 							pass # this makes it continue normally
 						else:
-							i+=int(line[4]+line[5], 16)
+							i+=int(line[4:6], 16)
 					except:
 						pass
 				case "random":
-					minimum=int(str(line[2]+line[3]), 16)
-					maximum=int(str(line[4]+line[5]), 16)
-					reg=str(line[6]+line[7])
+					minimum=int(line[2:5], 16)
+					maximum=int(line[4:6], 16)
+					reg=line[6:8]
 					if reg in registers:
 						randomNumber=str(hex(random.randint(minimum, maximum)))[2:]
 						if len(randomNumber) == 1:
@@ -255,16 +255,16 @@ def run(ROM, firmware):
 							registers[reg] = randomNumber
 				case "add":
 					if line[2] == "$":
-						var1 = str(line[3]+line[4])
-						var2 = str(line[6]+line[7])
+						var1 = line[3:5]
+						var2 = line[6:8]
 						val[var2]+=val[var1]
 					else:
-						item1 = str(line[2]+line[3])
-						var = str(line[5]+line[6])
+						item1 = line[2:4]
+						var = line[5:7]
 						if item1 in registers:
-							val[var] += str(registers[item1])
+							val[var] += registers[item1]
 						else:
-							val[var] += str(item1)
+							val[var] += item1
 				case "modulo":
 					tmp_result=str(hex(int(registers["r5"], 16)%int(registers["r6"], 16)))[2:]
 					if len(tmp_result) == 1:
@@ -272,13 +272,13 @@ def run(ROM, firmware):
 					else:
 						result=tmp_result
 					if line[2] != "$":
-						registers[str(line[2]+line[3]).lower()]=result
+						registers[line[2:4].lower()]=result
 					else:
-						val[str(line[3]+line[4]).lower()]=result
+						val[line[3:5].lower()]=result
 				case "var_if":
-					op1=str(line[2]+line[3])
-					op2=str(line[6]+line[7])
-					opr=str(line[4]+line[5])
+					op1=line[2:4]
+					op2=line[6:8]
+					opr=line[4:6]
 					hexToOperand = { # Made this cause im Lazy
 					"01":"==",
 					"02":"!=",
@@ -291,7 +291,7 @@ def run(ROM, firmware):
 						if eval(f"'{val[op1]}'{hexToOperand[opr]}'{val[op2]}'") == True: # once again, very secure
 							pass # this makes it continue normally
 						else:
-							i+=int(line[8]+line[9], 16)
+							i+=int(line[8:10], 16)
 					except:
 						pass
 				case "index":
@@ -301,9 +301,9 @@ def run(ROM, firmware):
 							srcIsVar = 1
 						else:
 							srcIsVar = 0
-						source = line[2+srcIsVar]+line[3+srcIsVar]
-						destin = line[4+srcIsVar]+line[5+srcIsVar]
-						index = line[6+srcIsVar]+line[7+srcIsVar]
+						source = line[2+srcIsVar:4+srcIsVar]
+						destin = line[4+srcIsVar:6+srcIsVar]
+						index = line[6+srcIsVar:8+srcIsVar]
 						if srcIsVar == 1:
 							if destin in registers:
 								registers[destin] = val[source][int(index, 16)]
@@ -332,10 +332,10 @@ def run(ROM, firmware):
 							srcIsVar = 1
 						else:
 							srcIsVar = 0
-						source = line[2+srcIsVar]+line[3+srcIsVar]
-						destin = line[4+srcIsVar]+line[5+srcIsVar]
-						index_start = line[6+srcIsVar]+line[7+srcIsVar]
-						index_end = line[8+srcIsVar]+line[9+srcIsVar]
+						source = line[2+srcIsVar:4+srcIsVar]
+						destin = line[4+srcIsVar:6+srcIsVar]
+						index_start = line[6+srcIsVar:8+srcIsVar]
+						index_end = line[8+srcIsVar:10+srcIsVar]
 						if srcIsVar == 1:
 							if destin in registers:
 								registers[destin] = val[source][int(index_start, 16):int(index_end, 16)]

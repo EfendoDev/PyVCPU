@@ -244,7 +244,7 @@ def run(ROM, firmware):
 					except:
 						pass
 				case "random":
-					minimum=int(line[2:5], 16)
+					minimum=int(line[2:4], 16)
 					maximum=int(line[4:6], 16)
 					reg=line[6:8]
 					if reg in registers:

@@ -244,9 +244,9 @@ def run(ROM, firmware):
 					except:
 						pass
 				case "random":
-					minimum=int(line[2:4], 16)
-					maximum=int(line[4:6], 16)
-					reg=line[6:8]
+					minimum=int(registers["r5"], 16)
+					maximum=int(registers["r6"], 16)
+					reg=line[2:4]
 					if reg in registers:
 						randomNumber=str(hex(random.randint(minimum, maximum)))[2:]
 						if len(randomNumber) == 1:

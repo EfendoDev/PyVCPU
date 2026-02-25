@@ -1,7 +1,7 @@
 # This is the first and probably worst CPU for PihOS, but this is the only CPU ill make for now
 # Uhhh this is heavily inspired my the late Terry A. Davis (Allah Rahmet Eylesin)
 # However unlike him I am bad at programming so im just gonna make this all virtual by just like this making a VCPU
-# Also no optimizations for this. Its Currently 23:42 on a school night as im writing this. Im too tired. Fuck you
+# Also no optimizations for this. Its Currently 23:42 on a school night as im writing this. Im too tired.
 import os
 import random
 import time
@@ -58,14 +58,13 @@ instructionset={ # These are 50/50 a todo and 50/50 needed
 "10":"var_if", # implemented      # !!! This is for strings
 "11":"index",   # implemented     # !!! This is to get letters/digits from strings/numbers out of a variable and puts it into another
 "12":"beep", # implemented        # !!! WINDOWS ONLY
-"13":"sleep", # mimimimi          # !!! i went to SLEEP while implementing (Get it hhahahahahahaha im so funny hhahHHAHAHAHAHA)
+"13":"sleep", # mimimimi          # !!! melatonin
 "14":"index_range", # implemented
 "15":"fwrite", # implemented
 "16":"fread", # implement
 "17":"fcreate", # implemented
 "18":"fappend", # implemented # last time im writing implemented omfg
-"19":"hex-to-dec", # flippable by putting 1 at the end instead of 0
-"1A":"hex-to-ascii" # same as the above
+"19":"hex-to-dec" # flippable by putting 1 at the end instead of 0
 } 
 
 '''
@@ -156,7 +155,7 @@ def run(ROM, firmware):
 			match inst:
 				case "print":
 					print(registers["r1"], end="")
-				case "move": # Comment from 0.27: Kill me 
+				case "move": # Comment from 0.27: Kill me      Response from later: Twin this aint that bad
 					if line[2] != "$":
 						if line[4] != "$":
 							if line[4:6].lower() in registers:
@@ -386,25 +385,25 @@ def run(ROM, firmware):
                                         if flipped == 0:
                                                 if s_type == "reg":
                                                         if d_type == "val":
-                                                                val[destin]==int(registers[source], 16)
+                                                                val[destin]=int(registers[source], 16)
                                                         else:
-                                                                registers[destin]==int(registers[source], 16)
+                                                                registers[destin]=int(registers[source], 16)
                                                 else:
                                                         if d_type == "val":
-                                                                val[destin]==int(val[source], 16)
+                                                                val[destin]=int(val[source], 16)
                                                         else:
-                                                                registers[destin]==int(val[source], 16)
+                                                                registers[destin]=int(val[source], 16)
                                         else:
                                                 if s_type == "reg":
                                                         if d_type == "val":
-                                                                val[destin]==str(hex(int(registers[source])))[2:]
+                                                                val[destin]=str(hex(int(registers[source])))[2:]
                                                         else:
-                                                               registers[destin]==str(hex(int(registers[source])))[2:]
+                                                               registers[destin]=str(hex(int(registers[source])))[2:]
                                                 else:
                                                         if d_type == "val":
-                                                                val[destin]==str(hex(int(val[source])))[2:]
+                                                                val[destin]=str(hex(int(val[source])))[2:]
                                                         else:
-                                                                registers[destin]==str(hex(int(val[source])))[2:]
+                                                                registers[destin]=str(hex(int(val[source])))[2:]
                                                                
 		for register in registers.items():
 			if len(register[1]) > rgstr_max_size:
